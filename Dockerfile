@@ -7,7 +7,7 @@ RUN  npm install --save express
 RUN  npm install -y ejs express-session session-file-store
 RUN  wget --no-check-certificate https://dl.cacerts.digicert.com/DigiCertGlobalRootCA.crt.pem
 
-COPY  msa_loginjs/login.js /var/task/
+COPY  login.js /var/task/
 
 CMD  [ "node", "login.js" ]
 
