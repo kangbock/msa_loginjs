@@ -85,7 +85,7 @@ app.post('/login.js',function(req,res){
             
                 req.session.logined= true;
                 req.session.user_id=req.body.id;
-                res.render('/main.html',{data});
+                res.send(location.href='/main.html',{data});
             }
                 // 다르면 로그인 실패, 에러를 출력하고 다시 로그인 페이지로
             else
