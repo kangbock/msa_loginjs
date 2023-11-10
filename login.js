@@ -87,12 +87,12 @@ app.post('/login.js',function(req,res){
             
                 req.session.logined= true;
                 req.session.user_id=req.body.id;
-                res.render('https://www.k-tech.cloud/main.html',{data});
+                res.render('/main.html',{data});
             }
                 // 다르면 로그인 실패, 에러를 출력하고 다시 로그인 페이지로
             else
             {
-                res.send("<script>alert('아이디 또는 비밀번호가 일치하지 않습니다.'); location.href='https://www.k-tech.cloud/login.html';</script>") 
+                res.send("<script>alert('아이디 또는 비밀번호가 일치하지 않습니다.'); location.href='/login.html';</script>") 
             }
         }
     }); return (0);
