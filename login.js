@@ -53,8 +53,6 @@ connection.changeUser({
     // Do another query
 });
 
-app.set('view engine', 'ejs');
-
 // login controller
 app.post('/login.js',function(req,res){
         // <form> 에서 보낸 값을 받아온다 POST
@@ -106,6 +104,3 @@ app.get('/health.html',function(req,res,err){
 var server = app.listen(port, function () {
     console.log("Express server has started on port : " + port);
 });
-
-
-app.engine('html',require('ejs').renderFile);
