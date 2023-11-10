@@ -53,6 +53,8 @@ connection.changeUser({
     // Do another query
 });
 
+app.set('view engine', 'ejs');
+
 // login controller
 app.post('/login.js',function(req,res){
         // <form> 에서 보낸 값을 받아온다 POST
@@ -106,3 +108,4 @@ var server = app.listen(port, function () {
 });
 
 
+app.engine('html',require('ejs').renderFile);
