@@ -66,7 +66,7 @@ app.post('/login.js',function(req,res){
         //res.send(data.id+" "+data.password)
 
         // DB로 query해서 레코드가 있는지 확인한다
-    connection.query('select * from member where email="'+data.id+'";', function(err,rows){
+    connection.query('select * from member where id="'+data.id+'";', function(err,rows){
         console.log('queried');
         if (err) { 
             //1. 쿼리에 실패하면 -> 에러페이지
