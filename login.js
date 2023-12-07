@@ -53,6 +53,7 @@ connection.changeUser({
     // Do another query
 });
 
+
 // login controller
 app.post('/login.js',function(req,res){
         // <form> 에서 보낸 값을 받아온다 POST
@@ -64,6 +65,11 @@ app.post('/login.js',function(req,res){
     console.log('post password : '+data.password);
         //res.send(data.id+" "+data.password)
 
+    if(req.session.logined){
+        res.render('/logout.html',{id: req.session.user_id});
+    }else 
+    res.render('/login.html')
+
         // DB로 query해서 레코드가 있는지 확인한다
     connection.query('select * from member where email="'+data.id+'";', function(err,rows,fields){
         console.log('queried');
@@ -72,6 +78,7 @@ app.post('/login.js',function(req,res){
             res.status=302;
             res.send('Error : '+err)
             res.end();
+            console.log('Error : ' + err);
         }else if(rows.length<=0){
            //2. 레코드가 없으면 -> 로그인 실패 페이지
             res.send('no id match found');
