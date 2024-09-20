@@ -5,7 +5,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 var session = require('express-session');
 var fileStore = require('session-file-store')(session);
-const serverCa = [fs.readFileSync("/path/to/your/DigiCertGlobalRootCA.crt.pem", "utf8")];
+const serverCa = [fs.readFileSync("/var/task/DigiCertGlobalRootCA.crt.pem", "utf8")];
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
