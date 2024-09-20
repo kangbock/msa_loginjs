@@ -3,11 +3,11 @@ var fs = require('fs');
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
-var session= require('express-session');
-var fileStore= require('session-file-store')(session);
-const serverCa = [fs.readFileSync("/var/task/DigiCertGlobalRootCA.crt.pem", "utf8")];
+var session = require('express-session');
+var fileStore = require('session-file-store')(session);
+const serverCa = [fs.readFileSync("/path/to/your/DigiCertGlobalRootCA.crt.pem", "utf8")];
 
-app.use(express.urlencoded({extended : true}));
+app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
 app.use(express.static('static')); 
@@ -18,91 +18,73 @@ app.use(session({
     store: new fileStore()
 }));
 
-
-var main_board = "SELECT * FROM member, board WHERE member.id = board.member_id ORDER BY board.board_id;";
-var board_write = "";
-
 const config = {
-    host    : "prod-kb97-mysql.mysql.database.azure.com",
-    user    : "admin1",
-    password: "It12345!",
-    port    : 3306,
+    host     : "prod-kb97-mysql.mysql.database.azure.com",
+    user     : "admin1",
+    password : "It12345!",
+    port     : 3306,
+    database : 'project', // Include the database here
     ssl: {
         rejectUnauthorized: true,
         ca: serverCa
     }
-}
-var connection = mysql.createConnection(config);
+};
 
-connection.connect(function(err) {
-        if (err) {
-                console.error("Database connection failed : " + err.stack);
-                return;
-        }
+var pool = mysql.createPool(config);
 
-        console.log('Connected to database.');
-});
-
-connection.changeUser({
-    database : 'project'
-}, (err) => {
+// Verify connection at startup
+pool.getConnection(function(err, connection) {
     if (err) {
-      console.log('Error in changing database', err);
-      return;
+        console.error('Error connecting to the database:', err);
+        process.exit(1); // Exit the application
+    } else {
+        console.log('Connected to the database.');
+        connection.release();
     }
-    // Do another query
 });
-
 
 // login controller
-app.post('/login.js',function(req,res){
-        // <form> 에서 보낸 값을 받아온다 POST
-    var data={
-        'id' : req.body.id,
+app.post('/login.js', function(req, res) {
+    var data = {
+        'id'       : req.body.id,
         'password' : req.body.password   
-    }
-    console.log('post id : '+data.id);
-    console.log('post password : '+data.password);
-        //res.send(data.id+" "+data.password)
+    };
+    console.log('post id : ' + data.id);
+    console.log('post password : ' + data.password);
 
-        // DB로 query해서 레코드가 있는지 확인한다
-    connection.query('select * from member where id="'+data.id+'";', function(err,rows){
-        console.log('queried');
+    pool.getConnection(function(err, connection) {
         if (err) { 
-            //1. 쿼리에 실패하면 -> 에러페이지
-            res.status=302;
-            res.send('Error : '+err)
-            res.end();
-            console.log('Error : ' + err);
-        }else if(rows.length<=0){
-           //2. 레코드가 없으면 -> 로그인 실패 페이지
-            res.send('no id match found');
-            res.end();
-        }else   
-        {   //3. 레코드가 있으면 ->
-                // 비밀번호와 아이디 확인
-		console.log(rows[0]['password']);
-            if( rows[0]['email']==data.id && rows[0]['password']==data.password )
-            {   //같으면 로그인 성공 페이지== 로그인 세션을 가진 메인페이지
-            
-                req.session.logined= true;
-                req.session.user_id=req.body.id;
-                res.render('main.html',{data});
-            }
-                // 다르면 로그인 실패, 에러를 출력하고 다시 로그인 페이지로
-            else
-            {
-                res.send("<script>alert('아이디 또는 비밀번호가 일치하지 않습니다.'); location.href='/login.html';</script>") 
-            }
+            console.error('Error getting connection from pool:', err);
+            res.status(500).send('Database connection error');
+            return;
         }
-    }); return (0);
-        
+
+        connection.query('SELECT * FROM member WHERE id = ?', [data.id], function(err, rows) {
+            connection.release(); // Release the connection back to the pool
+            if (err) { 
+                res.status(500).send('Error querying the database');
+                console.error('Error querying the database:', err);
+            } else if (rows.length <= 0) {
+                res.send('No matching ID found');
+            } else {   
+                console.log(rows[0]['password']);
+                if (rows[0]['email'] == data.id && rows[0]['password'] == data.password) {
+                    req.session.logined = true;
+                    req.session.user_id = req.body.id;
+                    res.render('main.html', {data});
+                } else {
+                    res.send("<script>alert('아이디 또는 비밀번호가 일치하지 않습니다.'); location.href='/login.html';</script>"); 
+                }
+            }
+        });
+    });
 });
 
-app.get('/health.html',function(req,res,err){
-	res.sendStatus(200);
+app.get('/health.html', function(req, res) {
+    res.sendStatus(200);
 });
 
-var server = app.listen(port, function () {
-    console.log("Express server has started on port : " + port);
+var server = app.listen(port, function() {
+    console.log("Express server has started on port: " + port);
 });
+
