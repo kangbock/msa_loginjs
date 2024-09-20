@@ -102,6 +102,6 @@ app.get('/health.html', function(req, res) {
 });
 
 var server = app.listen(port, function() {
-    console.log("Express server has started on port: " + port);
+    console.log("Express server has started on port : " + port);
 });
 
