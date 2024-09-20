@@ -2,6 +2,7 @@ var mysql = require('mysql');
 var fs = require('fs');
 const express = require('express');
 const app = express();
+const client = require('prom-client');
 const port = process.env.PORT || 3000;
 var session = require('express-session');
 var fileStore = require('session-file-store')(session);
@@ -41,6 +42,22 @@ pool.getConnection(function(err, connection) {
         console.log('Connected to the database.');
         connection.release();
     }
+});
+
+// Create a Registry to register the metrics
+const register = new client.Registry();
+
+// Add default metrics to the registry
+client.collectDefaultMetrics({ register });
+
+// Expose the /metrics endpoint
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
+
+app.listen(9113, () => {
+  console.log('Metrics server listening on port 9113');
 });
 
 // login controller
