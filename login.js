@@ -77,13 +77,13 @@ app.post('/login.js', function(req, res) {
         }
 
         connection.query('SELECT * FROM member WHERE id = ?', [data.id], function(err, rows) {
-            connection.release(); // Release the connection back to the pool
+            // connection.release(); // Release the connection back to the pool
             if (err) { 
                 res.status(500).send('Error querying the database');
                 console.error('Error querying the database:', err);
             } else if (rows.length <= 0) {
                 res.send('No matching ID found');
-                console.error(err);
+                console.log(rows[0]);
             } else {   
                 console.log(rows[0]['password']);
                 if (rows[0]['email'] == data.id && rows[0]['password'] == data.password) {
