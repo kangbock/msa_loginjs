@@ -76,7 +76,7 @@ app.post('/login.js', function(req, res) {
             return;
         }
 
-        connection.query('SELECT * FROM member WHERE id = ?', [data.id], function(err, rows) {
+        connection.query('SELECT * FROM member WHERE email = ?', [data.id], function(err, rows) {
             // connection.release(); // Release the connection back to the pool
             if (err) { 
                 res.status(500).send('Error querying the database');
