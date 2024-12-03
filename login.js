@@ -76,13 +76,14 @@ app.post('/login.js', function(req, res) {
             return;
         }
 
-        connection.query('select * from member where email="'+data.id+'";', function(err,rows){
+        connection.query('SELECT * FROM member WHERE email = ?', [data.id], function(err, rows) {
             connection.release(); // Release the connection back to the pool
             if (err) { 
                 res.status(500).send('Error querying the database');
                 console.error('Error querying the database:', err);
             } else if (rows.length <= 0) {
                 res.send('No matching ID found');
+                console.error(err);
             } else {   
                 console.log(rows[0]['password']);
                 if (rows[0]['email'] == data.id && rows[0]['password'] == data.password) {
