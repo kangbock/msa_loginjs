@@ -89,7 +89,7 @@ app.post('/login.js', function(req, res) {
                 if (rows[0]['email'] == data.id && rows[0]['password'] == data.password) {
                     req.session.logined = true;
                     req.session.user_id = req.body.id;
-                    res.render('main.html', {data});
+                    res.render('/main.html', {data});
                 } else {
                     res.send("<script>alert('아이디 또는 비밀번호가 일치하지 않습니다.'); location.href='/login.html';</script>"); 
                 }
