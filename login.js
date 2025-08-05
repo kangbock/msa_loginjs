@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const client = require('prom-client');
 const port = process.env.PORT || 3000;
-var session = require('express-session'); // crash looping test
+//var session = require('express-session'); // crash looping test
 var fileStore = require('session-file-store')(session);
 const serverCa = [fs.readFileSync("/var/task/DigiCertGlobalRootCA.crt.pem", "utf8")];
 
