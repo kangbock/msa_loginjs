@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1beta1
+kind: Component
+metadata:
+  name: login-js                 # 카탈로그 내 고유 이름(DNS-1123 호환)
+  description: Minimal Node.js service
+  annotations:
+    backstage.io/kubernetes-id: login-js          # ← K8s 매핑 핵심
+    backstage.io/kubernetes-namespace: default    # ← 선택(명시 범위)
+spec:
+  type: service
+  lifecycle: production
+  owner: team-devops
