@@ -6,7 +6,6 @@ const client = require('prom-client');
 const port = process.env.PORT || 3000;
 var session = require('express-session'); // crash looping test
 var fileStore = require('session-file-store')(session);
-const serverCa = [fs.readFileSync("/var/task/DigiCertGlobalRootCA.crt.pem", "utf8")];
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -25,10 +24,7 @@ const config = {
     password: "It12345!",
     port: 3306,
     database: 'project', // Include the database here
-    ssl: {
-        rejectUnauthorized: true,
-        ca: serverCa
-    }
+    ssl: { rejectUnauthorized: true, minVersion: 'TLSv1.2' }
 };
 
 var pool = mysql.createPool(config);
